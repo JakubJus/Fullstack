@@ -1,13 +1,13 @@
 sequenceDiagram
+    participant user
     participant browser
     participant server
-    participant user
-
+    
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/notes
     activate server
     server-->>browser: HTML document
     deactivate server
-
+  
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/main.css
     activate server
     server-->>browser: the css file
@@ -17,7 +17,14 @@ sequenceDiagram
     activate server
     server-->>browser: the JavaScript file
     deactivate server
-
+    user->>browser: New name
+    new name entry
+    browser-->>server:Add new name
+    save new name
+    server->>browser: Update the css file
+    send to display
+    browser-->>user:show
+    
     Note right of browser: The browser starts executing the JavaScript code that fetches the JSON from the server
 
     browser->>server: GET https://studies.cs.helsinki.fi/exampleapp/data.json
