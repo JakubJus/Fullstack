@@ -16,8 +16,8 @@ const StatisticsLine = (props) => {
       <td>{props.text}</td>
       <td>{props.value}</td>
     </tr>
-  );
-};
+  )
+}
 
 const Button = (props) => {
   return (
@@ -67,7 +67,7 @@ const App = () => {
     good: 0,
     neutral: 0,
     bad: 0,
-  });
+  })
   const handleGoodClick = () => {
     setClicks({ 
       good: clicks.good+1,
@@ -87,7 +87,7 @@ const App = () => {
       good: clicks.good,
       neutral: clicks.neutral,
       bad: clicks.bad+1 });
-  };
+  }
 
   return (
     <div>
@@ -98,7 +98,7 @@ const App = () => {
       <Header name={headerNames[1]} />
       <Statistics good={clicks.good} neutral={clicks.neutral} bad={clicks.bad} />
     </div>
-  );
-};
+  )
+}
 
 export default App;
