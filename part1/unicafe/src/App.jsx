@@ -2,15 +2,22 @@ import React, { useState } from 'react';
 
 const DisplayPercent = (props) => {
   return (
-    <div>{props.text} {props.value ? `${props.value}%` : '-'}</div>
+    <tr>
+      <td>{props.text}</td>
+      <td>{props.value}</td>
+      <td>%</td>
+    </tr>
   )
 }
 
-const Display = (props) => {
+const StatisticsLine = (props) => {
   return (
-    <div>{props.text} {props.value}</div>
-  )
-}
+    <tr>
+      <td>{props.text}</td>
+      <td>{props.value}</td>
+    </tr>
+  );
+};
 
 const Button = (props) => {
   return (
@@ -27,20 +34,22 @@ const Header = ({ name }) => {
     </div>
   )
 }
-
 const Statistics = (props) => {
-  const { good, neutral, bad } = props;
-  const totalClicks = good + neutral + bad;
+  const totalClicks = props.good + props.neutral + props.bad;
   if(totalClicks>0){
   return (
     <div>
-      <Display value={good} text="good" />
-      <Display value={neutral} text="neutral" />
-      <Display value={bad} text="bad" />
-      <Display value={totalClicks} text="total clicks" />
-      <DisplayPercent
-        value={totalClicks > 0 ? ((good - bad) / (totalClicks-neutral)) * 100 : 0}
+      <StatisticsLine value={props.good} text="good" />
+      <StatisticsLine value={props.neutral} text="neutral" />
+      <StatisticsLine value={props.bad} text="bad" />
+      <StatisticsLine value={totalClicks} text="total clicks" />
+      <StatisticsLine
+        value={((props.good - props.bad) / (totalClicks)).toFixed(1)}
         text="average"
+      />
+      <DisplayPercent
+        value={((props.good) / (totalClicks)*100).toFixed(1)}
+        text="positive"
       />
     </div>
     )
@@ -59,17 +68,25 @@ const App = () => {
     neutral: 0,
     bad: 0,
   });
-  const a=0
   const handleGoodClick = () => {
-    setClicks({ ...clicks, good: clicks.good + 1 });
-  };
+    setClicks({ 
+      good: clicks.good+1,
+      neutral: clicks.neutral,
+      bad: clicks.bad })
+  }
 
   const handleNeutralClick = () => {
-    setClicks({ ...clicks, neutral: clicks.neutral + 1 });
-  };
+    setClicks({
+      good: clicks.good,
+      neutral: clicks.neutral+1,
+      bad: clicks.bad })
+  }
 
   const handleBadClick = () => {
-    setClicks({ ...clicks, bad: clicks.bad + 1 });
+    setClicks({ 
+      good: clicks.good,
+      neutral: clicks.neutral,
+      bad: clicks.bad+1 });
   };
 
   return (
@@ -79,7 +96,7 @@ const App = () => {
       <Button onClick={handleNeutralClick} text="neutral" />
       <Button onClick={handleBadClick} text="bad" />
       <Header name={headerNames[1]} />
-      <Statistics {...clicks} />
+      <Statistics good={clicks.good} neutral={clicks.neutral} bad={clicks.bad} />
     </div>
   );
 };
