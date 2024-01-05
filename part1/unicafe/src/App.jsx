@@ -2,20 +2,28 @@ import React, { useState } from 'react';
 
 const DisplayPercent = (props) => {
   return (
-    <tr>
-      <td>{props.text}</td>
-      <td>{props.value}</td>
-      <td>%</td>
-    </tr>
+    <table>
+      <tbody>
+        <tr>
+          <td>{props.text}</td>
+          <td>{props.value}</td>
+          <td>%</td>
+        </tr>
+      </tbody>
+    </table>
   )
 }
 
 const StatisticsLine = (props) => {
   return (
-    <tr>
-      <td>{props.text}</td>
-      <td>{props.value}</td>
-    </tr>
+    <table> 
+      <tbody>
+        <tr>
+          <td>{props.text}</td>
+          <td>{props.value}</td>
+        </tr>
+      </tbody>
+    </table>
   )
 }
 
