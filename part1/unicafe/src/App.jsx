@@ -2,28 +2,22 @@ import React, { useState } from 'react';
 
 const DisplayPercent = (props) => {
   return (
-    <table>
-      <tbody>
         <tr>
           <td>{props.text}</td>
           <td>{props.value}</td>
           <td>%</td>
         </tr>
-      </tbody>
-    </table>
   )
 }
 
 const StatisticsLine = (props) => {
   return (
-    <table> 
-      <tbody>
+  
         <tr>
           <td>{props.text}</td>
           <td>{props.value}</td>
         </tr>
-      </tbody>
-    </table>
+      
   )
 }
 
@@ -45,21 +39,23 @@ const Header = ({ name }) => {
 const Statistics = (props) => {
   const totalClicks = props.good + props.neutral + props.bad;
   if(totalClicks>0){
-  return (
-    <div>
-      <StatisticsLine value={props.good} text="good" />
-      <StatisticsLine value={props.neutral} text="neutral" />
-      <StatisticsLine value={props.bad} text="bad" />
-      <StatisticsLine value={totalClicks} text="total clicks" />
-      <StatisticsLine
-        value={((props.good - props.bad) / (totalClicks)).toFixed(1)}
-        text="average"
-      />
-      <DisplayPercent
-        value={((props.good) / (totalClicks)*100).toFixed(1)}
-        text="positive"
-      />
-    </div>
+    return (
+      <table>
+        <tbody>
+          <StatisticsLine value={props.good} text="good" />
+          <StatisticsLine value={props.neutral} text="neutral" />
+          <StatisticsLine value={props.bad} text="bad" />
+          <StatisticsLine value={totalClicks} text="total clicks" />
+          <StatisticsLine
+            value={((props.good - props.bad) / (totalClicks)).toFixed(1)}
+            text="average"
+          />
+          <DisplayPercent
+            value={((props.good) / (totalClicks)*100).toFixed(1)}
+            text="positive"
+          />
+        </tbody>
+      </table>
     )
   }else{
     return(
