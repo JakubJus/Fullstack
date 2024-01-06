@@ -12,8 +12,8 @@ const Content = ({ parts }) => {
   return(
     <div>
       <ContentHelper name={parts[0].name} value={parts[0].exercises} /> 
-      <ContentHelper name={parts[0].name} value={parts[0].exercises} /> 
-      <ContentHelper name={parts[0].name} value={parts[0].exercises} /> 
+      <ContentHelper name={parts[1].name} value={parts[1].exercises} /> 
+      <ContentHelper name={parts[2].name} value={parts[2].exercises} /> 
       </div>
   )
 }
