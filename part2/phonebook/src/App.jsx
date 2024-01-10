@@ -1,5 +1,19 @@
 import React, { useState } from 'react';
 
+const TextBox = (props) => (
+  <div>
+    <input placeholder={props.text} onChange={props.onChange} />
+  </div>
+);
+
+const Button = (props) => (
+  <div>
+    <button onClick={props.handleClick}>
+      {props.text}
+    </button>
+  </div>
+);
+
 const App = () => {
   const [persons, setPersons] = useState([
     { name: 'Arto Hellas', number: '040-123456', id: 1 },
@@ -24,11 +38,11 @@ const App = () => {
   const checkExist = () => persons.some(contact => contact.name.toLowerCase() === newName.toLowerCase());
 
   const handleAddPerson = (event) => {
-    event.preventDefault(); // Prevent the default form submission behavior
+    event.preventDefault();
 
     if (!checkExist()) {
       setPersons([...persons, { name: newName, number: newNum }]);
-      setNewName(''); // Clear the input fields after adding a person
+      setNewName('');
       setNewNum('');
     } else {
       alert(`${newName} is already added to the phonebook`);
@@ -47,20 +61,12 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
-      <div>
-        search: <input value={look} onChange={handleSearth} />
-      </div>
+      <TextBox onChange={handleSearth} text="Searth" />
       <h2>Add a new</h2>
       <form onSubmit={handleAddPerson}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange} />
-        </div>
-        <div>
-          number: <input value={newNum} onChange={handleNumChange} />
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
+        <TextBox onChange={handleNameChange} text="Name" />
+        <TextBox onChange={handleNumChange} text="Number" />
+        <Button type="submit" text="Submit" />
       </form>
       <h2>Numbers</h2>
       <ul>
