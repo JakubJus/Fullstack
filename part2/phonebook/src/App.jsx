@@ -1,4 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
+import axios from 'axios';
+import Note from './components/Notes';
 
 const TextBox = (props) => (
   <div>
@@ -15,27 +17,44 @@ const Button = (props) => (
 );
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number: '040-123456', id: 1 },
-    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
-    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
-    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
-  ]);
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState('');
   const [newNum, setNewNum] = useState('');
   const [look, setLook] = useState('');
+
+  useEffect(() => {
+    console.log('effect');
+    axios
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        console.log('promise fulfilled');
+        setPersons(response.data); // Fix: Use setPersons to update state
+      })
+  }, []);
 
   const handleNumChange = (event) => {
     console.log(event.target.value);
     setNewNum(event.target.value);
   };
 
-  const handleNameChange = (event) => {
-    console.log(event.target.value);
-    setNewName(event.target.value);
-  };
+  const addToServer = event => {
+    event.preventDefault();
+    const noteObject = {
+      name: newName,
+      number: newNum,
+    };
 
-  const checkExist = () => persons.some(contact => contact.name.toLowerCase() === newName.toLowerCase());
+    axios.post('http://localhost:3001/persons', noteObject)
+      .then(response => {
+        console.log(response);
+        setPersons([...persons, response.data]);
+        setNewName('');
+        setNewNum('');
+      })
+      .catch(error => {
+        console.error('Error adding person to server:', error);
+      });
+  }
 
   const handleAddPerson = (event) => {
     event.preventDefault();
@@ -44,10 +63,18 @@ const App = () => {
       setPersons([...persons, { name: newName, number: newNum }]);
       setNewName('');
       setNewNum('');
+      addToServer(event); // Fix: Invoke the function with event parameter
     } else {
       alert(`${newName} is already added to the phonebook`);
     }
   };
+
+  const handleNameChange = (event) => {
+    console.log(event.target.value);
+    setNewName(event.target.value);
+  };
+
+  const checkExist = () => persons.some(contact => contact.name.toLowerCase() === newName.toLowerCase());
 
   const handleSearth = (event) => {
     console.log(event.target.value);
