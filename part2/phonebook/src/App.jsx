@@ -50,7 +50,33 @@ const App = () => {
         })
     }
   }
+  const changeVal = (event,id) => {
+    event.preventDefault();
+   
+    const noteObject = {
+        id: id,
+        name: newName,
+        number: newNum
+    };
 
+    console.log('Adding to server:', noteObject);
+
+    ServerCom.changeValue(noteObject)
+        .then(response => {
+            console.log('Server response:', response);
+            // Verify the structure of the response and adjust this line accordingly
+            ServerCom
+              .getAll()
+              .then(existingContacts => {
+              setPersons(existingContacts)
+            })
+            setNewName('');
+            setNewNum('');
+        })
+        .catch(error => {
+            console.error('Error adding person to server:', error);
+        });
+};
   const addToServer = event => {
     event.preventDefault();
   
@@ -78,23 +104,29 @@ const App = () => {
   
   const handleAddPerson = (event) => {
     event.preventDefault();
+    if( newName===""){
+      alert(`Please enter a name`);
+      return
+    }
+    if( newNum===""){
+      alert(`Please enter a number`);
+      return
+    }
     if (!checkPersonExist() || !checkNumExist()) {
       if(checkPersonExist()){
-        if(confirm(`Name already exist\nDo you want to change the number for ${newName} to ${newNum}`)){
-          const note = persons.find(n => n.name === newName)
-          console.log("checking for",note)
-          removePerson(note.id)
-          .then(() => {
-            // After the removal is complete, add the new person
-            addToServer(event);
-          })
+        const noteId = persons.find(n => n.name.toLowerCase() === newName.toLowerCase());
+        if(confirm(`Name already exist\nDo you want to change the number for ${noteId.name}\nFrom: ${noteId.number}\nTo: ${newNum}`)){
+          console.log("NoteID is:", noteId);
+          changeVal(event, noteId.id);
           return;
         }
       }
 
       if(checkNumExist()){
-        if(confirm(`Number already exist\nDo you want to change the name for number ${newNum} to ${newName}`)){
-          editValueInServer(event);
+        const noteId = persons.find(n => n.number.toLowerCase() === newNum.toLowerCase());
+        if(confirm(`Number already exist\nDo you want to change the name for number: ${noteId.number}\nFrom: ${noteId.name}\nTo: ${newName}`)){
+          console.log("NoteID is:", noteId);
+          changeVal(event, noteId.id);
           return;
         }
       }
