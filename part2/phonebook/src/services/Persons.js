@@ -16,5 +16,11 @@ const remove = (idToRemove) => {
     return request.then(response => response.data);
 }
 
+const changeValue = name => {
+    return axios.put(`${baseUrl}/${name.id}`, name)
+        .then(response => response.data)
 
-export default { getAll, create, remove }
+}
+
+
+export default { getAll, create, remove, changeValue }
