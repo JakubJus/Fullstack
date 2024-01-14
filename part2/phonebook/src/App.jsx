@@ -1,6 +1,6 @@
 import React, { useState,useEffect } from 'react';
-import axios from 'axios';
 import Note from './components/Notes';
+import ServerCom from './services/Persons';
 
 const TextBox = (props) => (
   <div>
@@ -8,12 +8,18 @@ const TextBox = (props) => (
   </div>
 );
 
+const RemoveButton = (props) => {
+  return (
+    <button onClick={() => props.removePerson(props.id)}>
+      {props.text}
+    </button>
+  );
+};
+
 const Button = (props) => (
-  <div>
     <button onClick={props.handleClick}>
       {props.text}
     </button>
-  </div>
 );
 
 const App = () => {
@@ -22,59 +28,94 @@ const App = () => {
   const [newNum, setNewNum] = useState('');
   const [look, setLook] = useState('');
 
-  useEffect(() => {
-    console.log('effect');
-    axios
-      .get('http://localhost:3001/persons')
-      .then(response => {
-        console.log('promise fulfilled');
-        setPersons(response.data); // Fix: Use setPersons to update state
-      })
-  }, []);
+  const checkPersonExist = () => persons.some(contact => contact.name.toLowerCase() === newName.toLowerCase());
+  const checkNumExist = () => persons.some(contact => contact.number.toLowerCase() === newNum.toLowerCase());
 
-  const handleNumChange = (event) => {
-    console.log(event.target.value);
-    setNewNum(event.target.value);
-  };
+  useEffect(() => {
+    ServerCom
+      .getAll()
+      .then(existingContacts => {
+        setPersons(existingContacts)
+      })
+  }, [])
+
+  const removePerson = id => {
+    if (window.confirm('Are you sure you want to remove?')) {
+      ServerCom.remove(id)
+        .then(() => {
+          setPersons(prevPersons => prevPersons.filter(person => person.id !== id));
+        })
+        .catch(error => {
+          console.error('Error removing person from server:', error);
+        })
+    }
+  }
 
   const addToServer = event => {
     event.preventDefault();
+  
     const noteObject = {
       name: newName,
       number: newNum,
     };
-
-    axios.post('http://localhost:3001/persons', noteObject)
+  
+    console.log('Adding to server:', noteObject);
+  
+    ServerCom.create(noteObject)
       .then(response => {
-        console.log(response);
-        setPersons([...persons, response.data]);
+        console.log('Server response:', response);
+        console.log('Server responseid:', persons);
+        // Verify the structure of the response and adjust this line accordingly
+        setPersons([...persons, response]);
+  
         setNewName('');
         setNewNum('');
       })
       .catch(error => {
         console.error('Error adding person to server:', error);
       });
-  }
-
+  };
+  
   const handleAddPerson = (event) => {
     event.preventDefault();
+    if (!checkPersonExist() || !checkNumExist()) {
+      if(checkPersonExist()){
+        if(confirm(`Name already exist\nDo you want to change the number for ${newName} to ${newNum}`)){
+          const note = persons.find(n => n.name === newName)
+          console.log("checking for",note)
+          removePerson(note.id)
+          .then(() => {
+            // After the removal is complete, add the new person
+            addToServer(event);
+          })
+          return;
+        }
+      }
 
-    if (!checkExist()) {
-      setPersons([...persons, { name: newName, number: newNum }]);
-      setNewName('');
-      setNewNum('');
-      addToServer(event); // Fix: Invoke the function with event parameter
+      if(checkNumExist()){
+        if(confirm(`Number already exist\nDo you want to change the name for number ${newNum} to ${newName}`)){
+          editValueInServer(event);
+          return;
+        }
+      }
+
+      if (!checkPersonExist() && !checkNumExist()) {
+        addToServer(event);
+      }
     } else {
       alert(`${newName} is already added to the phonebook`);
     }
+  };
+
+  const handleNumChange = (event) => {
+    console.log(event.target.value);
+    setNewNum(event.target.value);
   };
 
   const handleNameChange = (event) => {
     console.log(event.target.value);
     setNewName(event.target.value);
   };
-
-  const checkExist = () => persons.some(contact => contact.name.toLowerCase() === newName.toLowerCase());
 
   const handleSearth = (event) => {
     console.log(event.target.value);
@@ -98,7 +139,10 @@ const App = () => {
       <h2>Numbers</h2>
       <ul>
         {filteredPersons.map((person, index) => (
-          <li key={index}>{person.name} - {person.number}</li>
+        <li key={index}>
+        {person.name} - {person.number}
+        <RemoveButton removePerson={removePerson} id={person.id} text="Remove" />
+        </li>
         ))}
       </ul>
     </div>
