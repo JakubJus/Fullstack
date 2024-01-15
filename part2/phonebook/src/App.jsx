@@ -1,6 +1,21 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import Note from './components/Notes';
 import ServerCom from './services/Persons';
+import "./index.css";
+
+
+const Notification = ({ message, type }) => {
+  if (message === null) {
+    return null;
+  }
+  console.log("type: ",type)
+
+  return (
+    <div className={type}>
+      {message}
+    </div>
+  );
+};
 
 const TextBox = (props) => (
   <div>
@@ -27,6 +42,8 @@ const App = () => {
   const [newName, setNewName] = useState('');
   const [newNum, setNewNum] = useState('');
   const [look, setLook] = useState('');
+  const [errorMessage, setErrorMessage] = useState(null);
+  const[errorState, setErrorState] = useState('');
 
   const checkPersonExist = () => persons.some(contact => contact.name.toLowerCase() === newName.toLowerCase());
   const checkNumExist = () => persons.some(contact => contact.number.toLowerCase() === newNum.toLowerCase());
@@ -50,6 +67,7 @@ const App = () => {
         })
     }
   }
+  
   const changeVal = (event,id) => {
     event.preventDefault();
    
@@ -59,7 +77,13 @@ const App = () => {
         number: newNum
     };
 
-    console.log('Adding to server:', noteObject);
+    setErrorMessage(
+      `Sucess:changed value to ${newName} with number ${newNum}`
+  );
+  setErrorState('sucess')
+  setTimeout(() => {
+      setErrorMessage(null);
+  }, 5000);
 
     ServerCom.changeValue(noteObject)
         .then(response => {
@@ -84,7 +108,13 @@ const App = () => {
       name: newName,
       number: newNum,
     };
-  
+    setErrorMessage(
+      `Adding ${newName} with number ${newNum} to server`
+  );
+  setErrorState('sucess')
+  setTimeout(() => {
+      setErrorMessage(null);
+  }, 5000);
     console.log('Adding to server:', noteObject);
   
     ServerCom.create(noteObject)
@@ -104,12 +134,25 @@ const App = () => {
   
   const handleAddPerson = (event) => {
     event.preventDefault();
-    if( newName===""){
-      alert(`Please enter a name`);
+    if ( newName==="") {
+      setErrorMessage(
+        `Please enter a name`
+      );
+      setErrorState('error');
+      console.log("Errorstate: ",errorState);
+    setTimeout(() => {
+        setErrorMessage(null);
+    }, 5000);
       return
     }
     if( newNum===""){
-      alert(`Please enter a number`);
+      setErrorMessage(
+        `Please enter a number`
+    );
+    setErrorState('error')
+    setTimeout(() => {
+        setErrorMessage(null);
+    }, 5000);
       return
     }
     if (!checkPersonExist() || !checkNumExist()) {
@@ -133,9 +176,16 @@ const App = () => {
 
       if (!checkPersonExist() && !checkNumExist()) {
         addToServer(event);
+        
       }
     } else {
-      alert(`${newName} is already added to the phonebook`);
+      setErrorMessage(
+        `Name ${newName} with number ${newNum} was already added to server`
+    );
+    setErrorState('error')
+    setTimeout(() => {
+        setErrorMessage(null);
+    }, 5000);
     }
   };
 
@@ -161,6 +211,7 @@ const App = () => {
   return (
     <div>
       <h1>Phonebook</h1>
+      <Notification message={errorMessage} type={errorState} />
       <TextBox onChange={handleSearth} text="Searth" />
       <h2>Add a new</h2>
       <form onSubmit={handleAddPerson}>
