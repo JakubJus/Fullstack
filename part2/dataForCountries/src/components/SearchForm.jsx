@@ -4,14 +4,14 @@ const SearchForm = ({ value, handleChange, onSearch, suggestions, handleSuggesti
   <div>
     <form onSubmit={onSearch}>
       Country: <input value={value} onChange={handleChange} />
-      <button type="submit">Search</button>
+      
     </form>
     {suggestions.length < 10 ? (
       <div>
         <ul>
           {suggestions.map((suggestion, index) => (
             <li key={index} onClick={() => handleSuggestionClick(suggestion)}>
-              {suggestion}
+              {suggestion}<button type="submit">Show</button>
             </li>
           ))}
         </ul>
